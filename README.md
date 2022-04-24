@@ -1,8 +1,10 @@
 # RootUsing
-RootUsing
+In Root Session,
 
-The codes can be used directly in Root Prompt.
+Type .L <filename>.C to open the file and then use the functions through typing <functionname>().
 
-In Root Prompt,
-
-Type .L <file.name>.C and then use the functions
+Type .x <filename>.C to run the macros directly.
+  
+Type .x <filename>.C to compile and run the macros.This will cost you more time in compilation.But it is much faster to run.
+  
+The folder tutorials contain basic outputs and source codes in using ROOT,which comes from Youtube "Physics Matter"'s ROOT Tutorial Video series.
