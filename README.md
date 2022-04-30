@@ -6,10 +6,14 @@ In Root Session,
   
 The folder tutorials contain basic outputs and source codes in using ROOT,which comes from Youtube "Physics Matter"'s ROOT Tutorial Video series.
 
-The folder TMVAUserGuide contains notes when we are reading TMVAUserGuide.pdf.
+The folder TMVAUserGuide contains notes when we are studying TMVA.
+
+The folder HZZAnalysis contains the codes and files to operate HZZAnalysis in ATLAS 13tev dataset.It doesn't contain the neccessary data because it is large and it's unneccessary to put it on Github.
 
 Contributors:
 
 /tutorials : 周飞扬
 
 /TMVAUserGuide : 陈瑞琪、周飞扬
+
+/HZZAnalysis and its parent folder : 周飞扬
