@@ -1,37 +1,43 @@
-## Welcome to GitHub Pages
+# Welcome to my Github Pages
 
-You can use the [editor on GitHub](https://github.com/TomsonEinstein/ROOT-Higgs-EDU/edit/release/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## My Personal Contact Information
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+ - Mail
+   - QFLsansi1@163.com
+   - 2231595536@qq.com
+   - tomson.einstein@gmail.com
+ - Phone
+   - 13764864985 (x86)
 
-### Markdown
+## How to run files in ROOT
+In Root Session,
+ - Type .L [filename].C to open the file and then use the functions through typing [functionname] ().
+ - Type .x [filename].C to run the macros directly.
+ - Type .x [filename].C+ to compile and run the macros.This will cost you more time in compilation.But it is much faster to run.
+  
+## Folder in release branch  
+ - tutorials
+   - It contains basic outputs and source codes in using ROOT,
+   - which comes from Youtube "Physics Matter"'s ROOT Tutorial Video series.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+ - TMVAUserGuide
+   - contains notes when studying TMVA.
 
-```markdown
-Syntax highlighted code block
+ - HZZAnalysis
+   - contains the codes and files to operate HZZAnalysis in ATLAS 13tev dataset.
+ - TMVA_Higgs
+   - output files and source code in Higgs TMVA Analysis
 
-# Header 1
-## Header 2
-### Header 3
+## Where's the data I use?
+https://atlas-opendata.web.cern.ch/atlas-opendata/samples/2020/4lep/
 
-- Bulleted
-- List
+## Other ROOT References
+https://root.cern.ch/
 
-1. Numbered
-2. List
+https://root.cern/primer/
 
-**Bold** and _Italic_ and `Code` text
+https://root.cern/manual/
 
-[Link](url) and ![Image](src)
-```
+https://root.cern/topical/
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/TomsonEinstein/ROOT-Higgs-EDU/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+https://root.cern.ch/root/htmldoc/guides/users-guide/ROOTUsersGuide.html
