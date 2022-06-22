@@ -218,4 +218,112 @@ factory->AddTarget( "log(<YourRegressionTarget2>)" );
 factory->AddTarget( "<YourRegressionTarget3>", "Pretty Title", "Unit" );
 ```
 #### Preparing the training and test data
+**Code Example 15**: Preparation of the internal TMVA training and test trees. The sizes (number of events)of these trees are specified in the confiration option string. For classification problems, they can be set individully for signal and background. Note that the preselection cuts are applied before the training and test samples are created, i.e., the tree sizes apply to numbers of selected events. It is also possible to choose among different methods to select the events entering the training and test trees from the source trees. All options are described in Option-Table 2. See also the text for further information
+```cpp
+TCut preselectionCut = "<YourSelectionString>";
+factory->PrepareTrainingAndTestTree( preselectionCut, "<options>");
+```
+对于分类：
+信号和背景事件用于训练和测试的数量需要用变量提供：
+nTrain Signal, nTrain Background, nTest Signal and nTest Background
+默认值0就是把（剩下的）所有都弄进去（比如train=5000,test=0你有15000就分10000给test;两个都是0就均分）
 
+对于回归：
+只要提供train和test不用区分背景、信号。
+
+SplitMode：样例如何从树中划分（Random,Alternate,Block）SplitSeed
+MixMode：出现在测试样例中的顺序，使用方式类似。
+
+蒙特卡洛算法得出的权重不好，没关系，TMVA帮你重新算一遍。
+NormMode:None（不用,谢了），NumEvents.
+**Option table 2 设置参考**
+![t2](.\pictures\3.1_t2.png "table 2")
+#### Booking MVA methods
+我们要确定方法类型，加上一个你选的特别的名字，还有一堆特殊配置。
+如果一种类型用了多次，记得选不同的名字来区分。
+**Code Example 16**: Example booking of the likelihood method. The first argument is a unique type enumerator (the available types can be looked up in src/Types.h), the second is a user-defined name which must be unique among all booked MVA methods, and the third is a configuration option string that is specific to the method. For options that are not explicitly set in the string default values are used, which are printed to standard output. The syntax of the options should be explicit from the above example. Individual options are separated by a ’:’. Boolean variables can be set either explicitly as MyBoolVar=True/False, or just via MyBoolVar/!MyBoolVar. All specific options are explained in the tools and MVA sections of this Users Guide. There is no difference in the booking of methods for classification or regression applications. See Appendix A on page 163 for a complete booking list of all MVA methods in TMVA.
+```cpp
+factory->BookMethod( TMVA::Types::kLikelihood, "LikelihoodD",
+                    "!H:!V:!TransformOutput:PDFInterpol=Spline2:\
+                    NSmoothSig[0]=20:NSmoothBkg[0]=20:NSmooth=5:\
+                    NAvEvtPerBin=50:VarTransform=Decorrelate" );
+```
+#### Help option for MVA booking
+the configuration option ”H”或者
+```factory->PrintHelpMessage("<MethodName>")```
+#### Training the MVA methods
+```factory->TrainAllMethods();```
+The training results are stored in the weight files which are saved in the directory weights
+文件名：Jobname MethodName.weights.⟨extension⟩xml
+#### Testing the MVA methods
+```factory->TestAllMethods();```
+The MVA outputs are stored in the test tree (TestTree)
+#### Evaluating the MVA methods
+```factory->EvaluateAllMethods();```
+**The performance measures differ between classification and regression problems. They are summarised below.**
+#### Classification performance evaluation
+在训练和测试之后，分类输出的线性相关系数被打出来。
+矩阵也产生。我们要评估不同分类方式的表现。
+ - The **signal efficiency at three representative background efficiencies**(the efficiency is equal to 1 − rejection)obtained from a cut on the classifier output. Also given is the area of the background rejection versus signal efficiency function (the larger the area the better the performance).
+ - 分离度（**separation**） of a classifier y, defined by the integral
+   - $<S^2>=\frac{1}{2}\int{\frac{(\hat{y}_S(y)-\hat{y}_B(y))^2}{\hat{y}_S(y)+\hat{y}_B(y)}dy}$
+   - where $\hat{y}_S$ and $\hat{y}_B$ are the signal and background PDFs of y, respectively
+   - zero for identical（相同） signal and background shapes, and it is one for shapes with no overlap（重叠）.
+ - The discrimination **significance** of a classifier, defined by the difference between the classifier means for signal and background divided by the quadratic sum of their root-mean-squares.区分度
+这些都被写进输出的ROOT file，可以可视化。
+#### Regression performance evaluation
+ - The **Correlation** between two random variables X and Y is usually measured with the correlation coefficient ρ, defined by
+   - $\rho{}(X,Y)=\frac{cov(X,Y)}{\sigma{}_X\sigma{}_Y}$
+   - The correlation coefficient is symmetric in X and Y , lies within the interval [−1, 1], and quantifies by definition a linear relationship. 
+ - The **correlation ratio** is defined by
+   - $\eta{}^2(Y|X)=\frac{\sigma{}_E(Y|X)}{\sigma{}_Y}$
+   - where
+   - $E(Y|X)=\int{yP(y|x)dy}$
+   - is the conditional expectation of Y given X with the associated conditional probability density function $P(Y|X)$.
+   - $\eta{}^2$不对称，位于[0, 1]，与数据点和线性或非线性回归的拟合程度有关，哪些不构成函数关系的相关性不能被相关系数解释。
+   - 下面的关系可以用来导出相关系数比$\eta{}^2$和平方相关系数$\rho{}^2$。
+     - $\rho{}^2$ = $\eta{}^2$ = 1, if X and Y are in a strict linear functional relationship.
+     - $\rho{}^2$ ≤ $\eta{}^2$ = 1, if X and Y are in a strict nonlinear functional relationship.
+     - $\rho{}^2$ = $\eta{}^2$ < 1, if there is no strict functional relationship but the regression of X on Y is exactly linear.
+     - $\rho{}^2$ < $\eta{}^2$ < 1, if there is no strict functional relationship but some nonlinear regression curve is a better fit then the best linear fit.
+ - **Mutual information(互信息)信息论中出现** allows to detect any predictable relationship between two random variables, be it of functional or non-functional form. It is defined by 
+   - $I(X|Y)=\sum_{X,Y}P(X,Y)In\frac{P(X,Y)}{P(X)P(Y)}$
+   - where P(X, Y ) is the joint probability density function of the random variables X and Y , and P(X), P(Y ) are the corresponding marginal probabilities. 
+   - 信息熵H：$H(X)=-\sum_{X}P(X)InP(X)$
+   - X是离散随机数，P(X)是相关概率密度函数
+I(X)和H(X)两个物理量之间的联系可以通过下面的推导得出：
+![f1](.\pictures\3.1_f1.png "formula 1")
+where H(X|Y ) is the conditional entropy of X given Y .
+Thus mutual information is the reduction of the uncertainty in variable X due to the knowledge of Y . Mutual information is symmetric and takes positive absolute values. In the case of two completely independent variables I(X, Y ) is zero.
+I(X,Y)与样例和选择的变量很相关，因此最好通过一个简单的二维随机分布图来评估就可以了。
+Fig. 9有一些更形象化的展示。
+![p9](.\pictures\3.1_p9.png "figure 9")
+![t3](.\pictures\3.1_t3.png "table 1")
+
+#### Overtraining
+数据太少，自由度太少，用的算法太多。不同算法会有不同情况。这会导致看起来表现加强了，可以通过测试来评估过度训练的影响。也有一些特殊方法来避免。
+
+#### Other representations of MVA outputs for classification: probabilities and probability integral transformation (Rarity)
+PDFs,$\hat{y}_S(B)$.产出个体事件的分类概率或者是计算任何变化的概率积分变换。
+ - 分类概率：event i
+   - $P_S(i)=\frac{f_S*\hat{y}_S(i)}{f_S*\hat{y}_S(i)+(1-f_S)*\hat{y}_B(i)}$
+   - where fS = NS/(NS + NB) is the expected signal fraction, and NS(B) is the expected number of signal (background) events (default is fS = 0.5)
+ - 
+![f10](.\pictures\3.1_p10.png "figure 10")
+ - **Probability Integral Transformation**
+The probability integral transformation distributions of the Likelihood and Fisher classifiers for the example used in Sec. 2 are plotted in Fig. 10. Since Fisher performs better (cf. Fig. 6 on page 12), its signal distribution is stronger peaked towards 1. By construction, the background distributions are uniform within statistical fluctuations.
+### Cross Validation
+略，全是细节。
+### ROOT macros to plot training, testing and evaluation results
+这里只讲了修改参数，略。
+### The TMVA Reader
+整体上与TMVA Factory的过程有异曲同工之妙。
+
+### An alternative to the Reader: standalone C++ response classes
+
+## 数据预处理
+预处理会减少变量之间的联系，得到更好的效率。
+### 传递输入变量
+![f13](.\pictures\3.1_p13.png "figure 13")
+
+## 概率密度函数，PDF类
